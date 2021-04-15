@@ -1,0 +1,5 @@
+/vendor/
+/.idea/
+
+yarn-error.log
+composer.lock
