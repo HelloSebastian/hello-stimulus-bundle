@@ -41,7 +41,7 @@ return [
 
 ## Twig helper functions
 
-### hello_stimulus_controller
+### hello_stimulus_controller(controllerName, values = [])
 
 Render value controller attribute. Optional with values.
 
@@ -70,7 +70,9 @@ is rendered to
 <div data-controller="hello" data-hello-my-value-value="Hey!" data-hello-my-number-value="1234"></<div>
 ```
 
-### hello_stimulus_target
+
+
+### hello_stimulus_target(controllerName, target)
 
 Render value target attribute.
 
@@ -92,7 +94,9 @@ is rendered to
 <div data-hello-target="greeting"></div>
 ```
 
-### hello_stimulus_action
+
+
+### hello_stimulus_action(controllerName, event, method)
 
 Render action data attribute.
 
@@ -107,21 +111,22 @@ Render action data attribute.
 #### Examples
 
 ```twig
-<button 
-	type="button" 
-	{{ hello_stimulus_action('hello', 'click', 'handleBtnClick') }}
->Hey!</button>
+<button type="button" {{ hello_stimulus_action('hello', 'click', 'handleBtnClick') }}>
+    Hey!
+</button>
 ```
 
 is rendered to
 
 ```html
 <button type="button" data-action="click->hello#handleBtnClick">
-  Hey!
+    Hey!
 </button>
 ```
 
-### hello_stimulus_value
+
+
+### hello_stimulus_value(controllerName, name, value)
 
 Render value data attribute.
 
@@ -149,7 +154,92 @@ is rendered to
 
 ## Form helper functions
 
-In Symfony Forms it is helpful to pass attributes of stimulus directly to the types. For this purpose, this bundle provides a helper class with two methods (target and value).
+In Symfony Forms it is helpful to pass attributes of stimulus directly to the types. For this purpose, this bundle provides a helper class with two methods (`target()` and `value()`).
+
+[Full example of StimulusFormHelper](#example)
+
+### StimulusFormHelper API
+
+#### __construct(controllerName, defaultEvent = "click")
+
+##### Paramters
+
+**controllerName**: name (and location) of the JavaScript controller class
+
+**defaultEvent**: (optional): default DOM event to listen for (default is the "click" event)
+
+##### Usage
+
+You can use two ways to specify the controller:
+
+*Assuming the controller is located at `assets/controllers/user/user_form_controller.js`*
+
+- the" HTML" stimulus type
+
+  ```php
+  $this->formController = new StimulusFormHelper('user--user-form');
+  // rendered to data-controller="user--user-form" to the form tag
+  ```
+
+- the "JavaScript" type
+
+  ```php
+  $this->formController = new StimulusFormHelper('user/user_form');
+  // rendered to data-controller="user--user-form" to the form tag
+  ```
+
+Both variants give the same result.
+
+
+
+#### target(target)
+
+##### Parameters
+
+**target**: name of target property inside stimulus controller
+
+##### Returns
+
+```php
+array("data-[controllerName]-target" => "[target]");
+```
+
+##### Usage
+
+```php
+->add('firstName', TextType::class, array(
+    'label' => 'First name',
+    'attr' => $this->formController->target('firstNameInput')
+))
+```
+
+
+
+#### action(method, event = null)
+
+##### Parameters
+
+**method**: name of JavaScript method inside stimulus controller
+
+**event**: (optional) DOM event to listen for (if null, default event from constructor is taken)
+
+##### Returns
+
+```php
+array("data-action" => "[event]->[controllerName]#[method]");
+```
+
+##### Usage
+
+```php
+->add('isActive', CheckboxType::class, array(
+    'label' => 'is Active',
+    'required' => false,
+    'attr' => $this->formController->action("handleIsActive", "change")
+))
+```
+
+
 
 ### Example
 
@@ -159,12 +249,14 @@ In Symfony Forms it is helpful to pass attributes of stimulus directly to the ty
 namespace App\Form;
 
 use App\Entity\User;
-use HelloSebastian\HelloStimulusBundle\Form\StimulusFormHelper;
+use HelloSebastian\HelloStimulusBundle\Form\StimulusFormHelper; // <-- don't forget this use statement
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormView;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class UserType extends AbstractType
@@ -173,7 +265,7 @@ class UserType extends AbstractType
 
     public function __construct()
     {
-        $this->userFormController = new StimulusFormHelper('user-form');
+        $this->formController = new StimulusFormHelper('user-form');
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -181,12 +273,12 @@ class UserType extends AbstractType
         $builder
             ->add('firstName', TextType::class, array(
                 'label' => 'First name',
-              	'attr' => $this->userFormController->target('firstNameInput')
+              	'attr' => $this->formController->target('firstNameInput')
             ))
             ->add('lastName', TextareaType::class, array(
                 'label' => 'Last name',
-              	'label_attr' => $this->userFormController->target('lastNameLabel')
-              	'attr' => $this->userFormController->target('lastNameInput')
+              	'label_attr' => $this->formController->target('lastNameLabel')
+              	'attr' => $this->formController->target('lastNameInput')
             ))
             ->add('email', TextareaType::class, array(
                 'label' => 'Email'
@@ -194,22 +286,30 @@ class UserType extends AbstractType
           	->add('isActive', CheckboxType::class, array(
                 'label' => 'is Active',
                 'required' => false,
+              
+                // if you want to use both inside the same attr, you can use array_merge()
                 'attr' => array_merge(
-                    $this->userFormController->action("handleIsActive", "change"),
-                    $this->userFormController->target("isActiveCheckbox"),
+                    $this->formController->action("handleIsActive", "change"),
+                    $this->formController->target("isActiveCheckbox"),
                   	array('class' => 'my-checkbox-class')
                 )
             ))
         ;
     }
+  
+    public function buildView(FormView $view, FormInterface $form, array $options)
+    {
+        $this->formController->setControllerNameToFormView($view);
+    }      
 
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults([
+        $resolver->setDefaults(array(
             'data_class' => User::class,
-        ]);
+        ));
     }
 }
 ```
 
 `action` and `traget` return an array. If you want to use both inside the same `attr`, you can use `array_merge()`.
+

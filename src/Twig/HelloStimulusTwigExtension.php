@@ -44,7 +44,7 @@ class HelloStimulusTwigExtension extends AbstractExtension
                 'hello_stimulus_value',
                 [$this, 'renderValue'],
                 ['is_safe' => ['html_attr'], 'needs_environment' => true]
-            )
+            ),
         ];
     }
 
@@ -53,7 +53,7 @@ class HelloStimulusTwigExtension extends AbstractExtension
         $dataset = 'data-controller="' . $controllerName . '"';
 
         foreach ($values as $value) {
-            $dataset .= " ". $this->renderValue($twig, $controllerName, $value['name'], $value['value']);
+            $dataset .= " " . $this->renderValue($twig, $controllerName, $value['name'], $value['value']);
         }
 
         return $dataset;

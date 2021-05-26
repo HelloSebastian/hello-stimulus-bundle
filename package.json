@@ -1,0 +1,22 @@
+{
+  "name": "hello-stimulus-bundle",
+  "version": "v0.2.0",
+  "description": "Symfony Bundle with Stimulus.js Helper functions",
+  "repository": "git@github.com:HelloSebastian/hello-stimulus-bundle.git",
+  "author": "HelloSebastian",
+  "license": "MIT",
+  "private": false,
+  "symfony": {
+    "controllers": {
+      "collection-form": {
+        "main": "dist/controller.js",
+        "webpackMode": "eager",
+        "fetch": "eager",
+        "enabled": true
+      }
+    }
+  },
+  "peerDependencies": {
+    "stimulus": "^2.0.0"
+  }
+}
