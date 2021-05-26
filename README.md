@@ -111,21 +111,22 @@ Render action data attribute.
 #### Examples
 
 ```twig
-<button 
-	type="button" 
-	{{ hello_stimulus_action('hello', 'click', 'handleBtnClick') }}
->Hey!</button>
+<button type="button" {{ hello_stimulus_action('hello', 'click', 'handleBtnClick') }}>
+    Hey!
+</button>
 ```
 
 is rendered to
 
 ```html
 <button type="button" data-action="click->hello#handleBtnClick">
-  Hey!
+    Hey!
 </button>
 ```
 
-### hello_stimulus_value
+
+
+### hello_stimulus_value(controllerName, name, value)
 
 Render value data attribute.
 
@@ -155,9 +156,9 @@ is rendered to
 
 In Symfony Forms it is helpful to pass attributes of stimulus directly to the types. For this purpose, this bundle provides a helper class with two methods (`target()` and `value()`).
 
+[Full example of StimulusFormHelper](#example)
 
-
-### StimulusFormHelper 
+### StimulusFormHelper API
 
 #### __construct(controllerName, defaultEvent = "click")
 
@@ -165,7 +166,7 @@ In Symfony Forms it is helpful to pass attributes of stimulus directly to the ty
 
 **controllerName**: name (and location) of the JavaScript controller class
 
-**defaultEvent**: (optional): default DOM event to listen for
+**defaultEvent**: (optional): default DOM event to listen for (default is the "click" event)
 
 ##### Usage
 
@@ -309,8 +310,6 @@ class UserType extends AbstractType
     }
 }
 ```
-
-
 
 `action` and `traget` return an array. If you want to use both inside the same `attr`, you can use `array_merge()`.
 
