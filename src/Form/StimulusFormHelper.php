@@ -3,7 +3,11 @@
 
 namespace HelloSebastian\HelloStimulusBundle\Form;
 
+use Symfony\Component\Form\FormView;
 
+/**
+ * Class StimulusFormHelper.
+ */
 class StimulusFormHelper
 {
     /**
@@ -24,7 +28,9 @@ class StimulusFormHelper
      */
     public function __construct($controllerName, $defaultEvent = "click")
     {
-        $this->controllerName = $controllerName;
+        $tempName = str_replace("_", "-", $controllerName);
+        $this->controllerName = str_replace("/", "--", $tempName);
+
         $this->defaultEvent = $defaultEvent;
     }
 
@@ -40,7 +46,7 @@ class StimulusFormHelper
         $e = is_null($event) ? $this->defaultEvent : $event;
 
         return array(
-            "data-action" => "$e->$this->controllerName#$method",
+            "data-action" => "$e->$this->controllerName#$method"
         );
     }
 
@@ -55,5 +61,31 @@ class StimulusFormHelper
         return array(
             "data-$this->controllerName-target" => $target
         );
+    }
+
+    /**
+     * Set controller name to attr in form view.
+     *
+     * @param FormView $view
+     */
+    public function setControllerNameToFormView(FormView $view)
+    {
+        $attr = $view->vars['attr'];
+
+        $controller = isset($attr['data-controller']) ? $attr['data-controller'] . " " : "";
+        $controller .= $this->getControllerName();
+        $attr['data-controller'] = $controller;
+
+        $view->vars['attr'] = $attr;
+    }
+
+    /**
+     * Return controller name.
+     *
+     * @return string
+     */
+    public function getControllerName()
+    {
+        return $this->controllerName;
     }
 }
