@@ -4,12 +4,14 @@
 namespace HelloSebastian\HelloStimulusBundle\Twig;
 
 
+use HelloSebastian\HelloStimulusBundle\Util\ControllerNameTrait;
 use Twig\Environment;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 class HelloStimulusTwigExtension extends AbstractExtension
 {
+    use ControllerNameTrait;
 
     /**
      * {@inheritdoc}
@@ -50,10 +52,10 @@ class HelloStimulusTwigExtension extends AbstractExtension
 
     public function renderController(Environment $twig, $controllerName, $values = array())
     {
-        $dataset = 'data-controller="' . $controllerName . '"';
+        $dataset = 'data-controller="' . $this->transformControllerName($controllerName) . '"';
 
         foreach ($values as $value) {
-            $dataset .= " " . $this->renderValue($twig, $controllerName, $value['name'], $value['value']);
+            $dataset .= ' ' . $this->renderValue($twig, $controllerName, $value['name'], $value['value']);
         }
 
         return $dataset;
@@ -61,18 +63,18 @@ class HelloStimulusTwigExtension extends AbstractExtension
 
     public function renderTarget(Environment $twig, $controllerName, $target)
     {
-        return 'data-' . $controllerName . '-target="' . $target . '"';
+        return 'data-' . $this->transformControllerName($controllerName) . '-target="' . $target . '"';
     }
 
     public function renderAction(Environment $twig, $controllerName, $event, $method)
     {
-        return 'data-action="' . $event . '->' . $controllerName . '#' . $method . '"';
+        return 'data-action="' . $event . '->' . $this->transformControllerName($controllerName) . '#' . $method . '"';
     }
 
     public function renderValue(Environment $twig, $controllerName, $name, $value)
     {
         $kebabCaseName = strtolower(preg_replace('%([A-Z])([a-z])%', '-\1\2', $name));
-        return 'data-' . $controllerName . '-' . $kebabCaseName . '-value="' . $value . '"';
+        return 'data-' . $this->transformControllerName($controllerName) . '-' . $kebabCaseName . '-value="' . $value . '"';
     }
 
 

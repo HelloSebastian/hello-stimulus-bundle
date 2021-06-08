@@ -3,6 +3,7 @@
 
 namespace HelloSebastian\HelloStimulusBundle\Form;
 
+use HelloSebastian\HelloStimulusBundle\Util\ControllerNameTrait;
 use Symfony\Component\Form\FormView;
 
 /**
@@ -10,6 +11,8 @@ use Symfony\Component\Form\FormView;
  */
 class StimulusFormHelper
 {
+    use ControllerNameTrait;
+
     /**
      * @var string
      */
@@ -28,9 +31,7 @@ class StimulusFormHelper
      */
     public function __construct($controllerName, $defaultEvent = "click")
     {
-        $tempName = str_replace("_", "-", $controllerName);
-        $this->controllerName = str_replace("/", "--", $tempName);
-
+        $this->controllerName = $this->transformControllerName($controllerName);
         $this->defaultEvent = $defaultEvent;
     }
 
