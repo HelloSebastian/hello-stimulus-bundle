@@ -50,10 +50,13 @@ class HelloStimulusTwigExtension extends AbstractExtension
 
     public function renderController(Environment $twig, $controllerName, $values = array())
     {
+        $controllerName = str_replace("_", "-", $controllerName);
+        $controllerName = str_replace("/", "--", $controllerName);
+
         $dataset = 'data-controller="' . $controllerName . '"';
 
         foreach ($values as $value) {
-            $dataset .= " " . $this->renderValue($twig, $controllerName, $value['name'], $value['value']);
+            $dataset .= ' ' . $this->renderValue($twig, $controllerName, $value['name'], $value['value']);
         }
 
         return $dataset;

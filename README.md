@@ -70,6 +70,26 @@ is rendered to
 <div data-controller="hello" data-hello-my-value-value="Hey!" data-hello-my-number-value="1234"></<div>
 ```
 
+You can use two ways to specify the controller:
+
+*Assuming the controller is located at `assets/controllers/user/user_form_controller.js`*
+
+- the "HTML" stimulus type
+
+  ```twig
+  <div {{ hello_stimulus_controller('user--user-form') }}></div>
+  // rendered to data-controller="user--user-form"
+  ```
+
+- the "JavaScript" type
+
+  ```php
+  <div {{ hello_stimulus_controller('user/user_form') }}></div>
+  // rendered to data-controller="user--user-form"
+  ```
+
+Both variants give the same result.
+
 
 
 ### hello_stimulus_target(controllerName, target)
@@ -174,7 +194,7 @@ You can use two ways to specify the controller:
 
 *Assuming the controller is located at `assets/controllers/user/user_form_controller.js`*
 
-- the" HTML" stimulus type
+- the "HTML" stimulus type
 
   ```php
   $this->formController = new StimulusFormHelper('user--user-form');
