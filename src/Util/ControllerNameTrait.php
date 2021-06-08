@@ -10,7 +10,7 @@ trait ControllerNameTrait
      * Transform controller name from "JavaScript" to "HTML" way to specify controller.
      *
      * @param string $controllerName
-     * @return string|string[]
+     * @return string
      */
     private function transformControllerName($controllerName)
     {
