@@ -78,14 +78,14 @@ You can use two ways to specify the controller:
 
   ```twig
   <div {{ hello_stimulus_controller('user--user-form') }}></div>
-  // rendered to data-controller="user--user-form"
+  {# rendered to data-controller="user--user-form" #}
   ```
 
 - the "JavaScript" type
 
-  ```php
+  ```twig
   <div {{ hello_stimulus_controller('user/user_form') }}></div>
-  // rendered to data-controller="user--user-form"
+  {# rendered to data-controller="user--user-form" #}
   ```
 
 Both variants give the same result.
